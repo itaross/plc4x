@@ -555,7 +555,7 @@ public class OpcuaTcpPlcConnection extends BaseOpcuaPlcConnection {
     }
 
     private static String getOptionString(String params){
-        if(params.contains("=")){
+        if(params != null && params.contains("=")){
             if(params.contains("?")){
                 return params.split("\\?")[1];
             }else{
