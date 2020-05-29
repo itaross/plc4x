@@ -94,7 +94,7 @@
               </artifactItems>
             </configuration>
           </execution>
-          <execution>
+          <!-- <execution>
             <id>check-dependencies</id>
             <phase>verify</phase>
             <goals>
@@ -107,7 +107,7 @@
                 <usedDependency>javax.annotation:jsr250-api</usedDependency>
               </usedDependencies>
             </configuration>
-          </execution>
+          </execution> -->
         </executions>
       </plugin>
 

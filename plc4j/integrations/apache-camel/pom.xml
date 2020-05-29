@@ -106,22 +106,22 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
-          <execution>
-            <id>check-dependencies</id>
-            <phase>verify</phase>
-            <goals>
-              <goal>analyze-only</goal>
-            </goals>
-            <configuration>
-              <failOnWarning>true</failOnWarning>
-              <ignoredDependencies combine.children="append">
-                <ignoredDependency>org.apache.plc4x:plc4j-driver-ads</ignoredDependency>
-              </ignoredDependencies>
-              <usedDependencies combine.children="append">
-                <usedDependency>javax.activation:javax.activation-api</usedDependency>
-              </usedDependencies>
-            </configuration>
-          </execution>
+<!--          <execution>-->
+<!--            <id>check-dependencies</id>-->
+<!--            <phase>verify</phase>-->
+<!--            <goals>-->
+<!--              <goal>analyze-only</goal>-->
+<!--            </goals>-->
+<!--            <configuration>-->
+<!--              <failOnWarning>true</failOnWarning>-->
+<!--              <ignoredDependencies combine.children="append">-->
+<!--                <ignoredDependency>org.apache.plc4x:plc4j-driver-ads</ignoredDependency>-->
+<!--              </ignoredDependencies>-->
+<!--              <usedDependencies combine.children="append">-->
+<!--                <usedDependency>javax.activation:javax.activation-api</usedDependency>-->
+<!--              </usedDependencies>-->
+<!--            </configuration>-->
+<!--          </execution>-->
         </executions>
       </plugin>
     </plugins>
