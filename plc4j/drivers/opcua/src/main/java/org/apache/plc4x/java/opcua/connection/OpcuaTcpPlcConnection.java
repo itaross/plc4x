@@ -44,14 +44,18 @@ import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.*;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.*;
+import org.eclipse.milo.opcua.stack.core.util.TypeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Array;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.time.Duration;
@@ -432,7 +436,6 @@ public class OpcuaTcpPlcConnection extends BaseOpcuaPlcConnection {
         return future;
     }
 
-
     @Override
     public CompletableFuture<PlcWriteResponse> write(PlcWriteRequest writeRequest) {
         CompletableFuture<PlcWriteResponse> future;
@@ -440,26 +443,36 @@ public class OpcuaTcpPlcConnection extends BaseOpcuaPlcConnection {
 
             InternalPlcWriteRequest internalPlcWriteRequest = (InternalPlcWriteRequest) writeRequest;
 
-            List<PlcField> writePLCValues = writeRequest.getFields();
             LinkedList<DataValue> values = new LinkedList<>();
             LinkedList<NodeId> ids = new LinkedList<>();
             LinkedList<String> names = new LinkedList<>();
             Map<String, PlcResponseCode> fieldResponse = new HashMap<>();
+
             for (String fieldName : writeRequest.getFieldNames()) {
                 OpcuaField uaField = (OpcuaField) writeRequest.getField(fieldName);
                 NodeId idNode = generateNodeId(uaField);
                 Object valueObject = internalPlcWriteRequest.getPlcValue(fieldName).getObject();
+
                 // Added small work around for handling BigIntegers as input type for UInt64
-                if (valueObject instanceof BigInteger) valueObject = ulong((BigInteger) valueObject);
+                if (valueObject instanceof BigInteger)
+                    valueObject = ulong((BigInteger) valueObject);
+
+                // Another workaround for the PlcList incompatible with Eclipse Milo
+                if (valueObject instanceof List<?>) {
+                    valueObject = getPlainArrayFromCollection(internalPlcWriteRequest.getPlcValue(fieldName).getList());
+                }
+                
                 Variant var = new Variant(valueObject);
                 DataValue value = new DataValue(var, null, null, null);
                 ids.add(idNode);
                 names.add(fieldName);
                 values.add(value);
             }
+
             CompletableFuture<List<StatusCode>> opcRequest =
                 client.writeValues(ids, values);
             List<StatusCode> statusCodes = null;
+
             try {
                 statusCodes = opcRequest.get();
             } catch (InterruptedException e) {
@@ -492,6 +505,7 @@ public class OpcuaTcpPlcConnection extends BaseOpcuaPlcConnection {
                 }
                 fieldResponse.put(names.get(counter), resultCode);
             }
+
             InternalPlcWriteRequest internalPlcReadRequest = checkInternal(writeRequest, InternalPlcWriteRequest.class);
             PlcWriteResponse response = new DefaultPlcWriteResponse(internalPlcReadRequest, fieldResponse);
             return response;
@@ -501,6 +515,46 @@ public class OpcuaTcpPlcConnection extends BaseOpcuaPlcConnection {
         return future;
     }
 
+    private <T> T[] convertPlcListToArray(Class<T> clazz, List<? extends PlcValue> list) {
+        if (!list.isEmpty()) {
+            T[] ret = (T[]) Array.newInstance(clazz, list.size());
+
+            for (int i = 0; i < ret.length; i++) {
+                ret[i] = (T) list.get(i).getObject();
+            }
+            return ret;
+        } else {
+            return null;
+        }
+    }
+
+    private Object[] getPlainArrayFromCollection(List<? extends PlcValue> list) {
+        if (!list.isEmpty()) {
+            Object firstElem = list.get(0);
+
+            if (firstElem instanceof PlcBoolean) {
+                return convertPlcListToArray(Boolean.class, list);
+            } else if (firstElem instanceof PlcByte) {
+                return convertPlcListToArray(Byte.class, list);
+            } else if (firstElem instanceof PlcShort) {
+                return convertPlcListToArray(Short.class, list);
+            } else if (firstElem instanceof PlcInteger) {
+                return convertPlcListToArray(Integer.class, list);
+            } else if (firstElem instanceof PlcLong) {
+                return convertPlcListToArray(Long.class, list);
+            } else if (firstElem instanceof PlcFloat) {
+                return convertPlcListToArray(Float.class, list);
+            } else if (firstElem instanceof PlcDouble) {
+                return convertPlcListToArray(Double.class, list);
+            } else if (firstElem instanceof PlcString) {
+                return convertPlcListToArray(String.class, list);
+            } else {
+                return list.toArray(new Object[list.size()]);
+            }
+        } else {
+            return new Object[0];
+        }
+    }
 
     private NodeId generateNodeId(OpcuaField uaField) {
         NodeId idNode = null;
@@ -540,30 +594,31 @@ public class OpcuaTcpPlcConnection extends BaseOpcuaPlcConnection {
     private IdentityProvider getIdentityProvider() {
         return new AnonymousProvider();
     }
-
-    private static String getSubPathOfParams(String params){
-        if(params.contains("=")){
-            if(params.contains("?")){
+    
+    private static String getSubPathOfParams(String params) {
+        if (params.contains("=")) {
+            if (params.contains("?")) {
                 return params.split("\\?")[0];
-            }else{
+            } else {
                 return "";
             }
 
-        }else {
+        } else {
             return params;
         }
     }
 
-    private static String getOptionString(String params){
-        if(params != null && params.contains("=")){
-            if(params.contains("?")){
+    private static String getOptionString(String params) {
+        if (params != null && params.contains("=")) {
+            if (params.contains("?")) {
                 return params.split("\\?")[1];
-            }else{
+            } else {
                 return params;
             }
 
-        }else {
+        } else {
             return "";
         }
     }
+
 }
