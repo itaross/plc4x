@@ -268,7 +268,17 @@ public class PlcEntityManagerComplexTest implements WithAssertions {
         }
 
         @Override
+        public PlcValue encodeUShort(org.apache.plc4x.java.api.model.PlcField field, Object[] values) {
+            return null;
+        }
+
+        @Override
         public PlcValue encodeInteger(org.apache.plc4x.java.api.model.PlcField field, Object[] values) {
+            return null;
+        }
+
+        @Override
+        public PlcValue encodeUInteger(org.apache.plc4x.java.api.model.PlcField field, Object[] values) {
             return null;
         }
 

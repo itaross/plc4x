@@ -32,6 +32,8 @@ import org.apache.plc4x.java.api.value.PlcList;
 import org.apache.plc4x.java.api.value.PlcValue;
 import org.apache.plc4x.java.spi.connection.PlcFieldHandler;
 import org.apache.plc4x.java.spi.messages.utils.FieldValueItem;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -163,7 +165,9 @@ public class DefaultPlcWriteRequest implements InternalPlcWriteRequest, Internal
             handlerMap.put(Boolean.class, fieldHandler::encodeBoolean);
             handlerMap.put(Byte.class, fieldHandler::encodeByte);
             handlerMap.put(Short.class, fieldHandler::encodeShort);
+            handlerMap.put(UShort.class, fieldHandler::encodeUShort);
             handlerMap.put(Integer.class, fieldHandler::encodeInteger);
+            handlerMap.put(UInteger.class, fieldHandler::encodeUInteger);
             handlerMap.put(BigInteger.class, fieldHandler::encodeBigInteger);
             handlerMap.put(Long.class, fieldHandler::encodeLong);
             handlerMap.put(Float.class, fieldHandler::encodeFloat);
@@ -191,8 +195,19 @@ public class DefaultPlcWriteRequest implements InternalPlcWriteRequest, Internal
         }
 
         @Override
+        public Builder addItem(String name, String fieldQuery, UShort... values){
+            return addItem(name, fieldQuery, values, fieldHandler::encodeUShort);
+        }
+
+
+        @Override
         public Builder addItem(String name, String fieldQuery, Integer... values) {
             return addItem(name, fieldQuery, values, fieldHandler::encodeInteger);
+        }
+
+        @Override
+        public Builder addItem(String name, String fieldQuery, UInteger... values){
+            return addItem(name, fieldQuery, values, fieldHandler::encodeUInteger);
         }
 
         @Override

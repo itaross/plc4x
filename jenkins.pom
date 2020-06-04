@@ -37,12 +37,22 @@
     <name>PLC4X: Jenkins Tools</name>
     <description>Set of helpers to do individual tasks only needed on our Jenkins build.</description>
 
-    <distributionManagement>
+    <!-- <distributionManagement>
         <site>
             <id>apache.website</id>
             <url>scm:git:https://gitbox.apache.org/repos/asf/plc4x-website.git</url>
         </site>
-    </distributionManagement>
+    </distributionManagement> -->
+    <distributionManagement>
+        <snapshotRepository>
+          <id>oncode-nexus</id>
+          <url>http://nexus.oncode.it/repository/maven-snapshots/</url>
+        </snapshotRepository>
+        <repository>
+          <id>oncode-nexus</id>
+          <url>http://nexus.oncode.it/repository/maven-releases/</url>
+        </repository>
+      </distributionManagement>
 
     <profiles>
         <!--

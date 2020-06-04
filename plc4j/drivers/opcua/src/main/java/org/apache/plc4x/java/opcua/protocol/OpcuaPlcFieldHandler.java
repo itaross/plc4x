@@ -23,6 +23,8 @@ import org.apache.plc4x.java.api.exceptions.PlcInvalidFieldException;
 import org.apache.plc4x.java.api.model.PlcField;
 import org.apache.plc4x.java.api.value.*;
 import org.apache.plc4x.java.spi.connection.DefaultPlcFieldHandler;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -78,6 +80,7 @@ public class OpcuaPlcFieldHandler extends DefaultPlcFieldHandler {
         }
     }
 
+
     @Override
     public PlcValue encodeShort(PlcField field, Object[] values) {
         ArrayList<Short> resultSet = new ArrayList<>();
@@ -86,6 +89,19 @@ public class OpcuaPlcFieldHandler extends DefaultPlcFieldHandler {
         }
         if(resultSet.size() == 1) {
             return new PlcInteger(resultSet.get(0));
+        } else {
+            return new PlcList(resultSet);
+        }
+    }
+
+    @Override
+    public PlcValue encodeUShort(PlcField field, Object[] values) {
+        ArrayList<UShort> resultSet = new ArrayList<>();
+        for (Object item : values) {
+            resultSet.add((UShort) item);
+        }
+        if(resultSet.size() == 1) {
+            return new PlcUShort(resultSet.get(0));
         } else {
             return new PlcList(resultSet);
         }
@@ -103,6 +119,20 @@ public class OpcuaPlcFieldHandler extends DefaultPlcFieldHandler {
             return new PlcList(resultSet);
         }
     }
+
+    @Override
+    public PlcValue encodeUInteger(PlcField field, Object[] values) {
+        ArrayList<UInteger> resultSet = new ArrayList<>();
+        for (Object item : values) {
+            resultSet.add((UInteger) item);
+        }
+        if(resultSet.size() == 1) {
+            return new PlcUInteger(resultSet.get(0));
+        } else {
+            return new PlcList(resultSet);
+        }
+    }
+
 
     @Override
     public PlcValue encodeBigInteger(PlcField field, Object[] values) {
@@ -154,7 +184,7 @@ public class OpcuaPlcFieldHandler extends DefaultPlcFieldHandler {
         if(resultSet.size() == 1) {
             return new PlcDouble(resultSet.get(0));
         } else {
-            return new PlcList(resultSet, internalClass);
+            return new PlcList(resultSet);
         }
     }
 

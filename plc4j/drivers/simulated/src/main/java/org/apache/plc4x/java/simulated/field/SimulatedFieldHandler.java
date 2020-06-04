@@ -82,6 +82,11 @@ public class SimulatedFieldHandler implements PlcFieldHandler {
     }
 
     @Override
+    public PlcValue encodeUShort(PlcField field, Object[] values) {
+        return null;
+    }
+
+    @Override
     public PlcValue encodeInteger(PlcField field, Object[] values) {
         SimulatedField testField = (SimulatedField) field;
         if (testField.getDataType() == Integer.class) {
@@ -92,6 +97,11 @@ public class SimulatedFieldHandler implements PlcFieldHandler {
             }
         }
         throw new PlcRuntimeException("Invalid encoder for type " + testField.getDataType().getName());
+    }
+
+    @Override
+    public PlcValue encodeUInteger(PlcField field, Object[] values) {
+        return null;
     }
 
     @Override

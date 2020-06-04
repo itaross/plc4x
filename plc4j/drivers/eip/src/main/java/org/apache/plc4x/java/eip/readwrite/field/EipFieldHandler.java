@@ -74,12 +74,22 @@ public class EipFieldHandler implements PlcFieldHandler {
     }
 
     @Override
+    public PlcValue encodeUShort(PlcField field, Object[] values) {
+        return null;
+    }
+
+    @Override
     public PlcValue encodeInteger(PlcField field, Object[] values) {
         EipField eipField = (EipField)field;
         if (eipField.getType() == CIPDataTypeCode.DINT) {
             return internalEncodeInteger(field, values);
         }
         throw new PlcRuntimeException("Invalid encoder for type " + eipField.getType());
+    }
+
+    @Override
+    public PlcValue encodeUInteger(PlcField field, Object[] values) {
+        return null;
     }
 
     @Override

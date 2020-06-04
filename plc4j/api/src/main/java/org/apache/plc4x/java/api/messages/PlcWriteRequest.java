@@ -18,6 +18,9 @@
  */
 package org.apache.plc4x.java.api.messages;
 
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDate;
@@ -43,7 +46,11 @@ public interface PlcWriteRequest extends PlcFieldRequest {
 
         PlcWriteRequest.Builder addItem(String name, String fieldQuery, Short... values);
 
+        PlcWriteRequest.Builder addItem(String name, String fieldQuery, UShort... values);
+
         PlcWriteRequest.Builder addItem(String name, String fieldQuery, Integer... values);
+
+        PlcWriteRequest.Builder addItem(String name, String fieldQuery, UInteger... values);
 
         PlcWriteRequest.Builder addItem(String name, String fieldQuery, BigInteger... values);
 

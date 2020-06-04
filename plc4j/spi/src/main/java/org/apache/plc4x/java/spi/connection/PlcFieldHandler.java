@@ -35,7 +35,11 @@ public interface PlcFieldHandler {
 
     PlcValue encodeShort(PlcField field, Object[] values);
 
+    PlcValue encodeUShort(PlcField field, Object[] values);
+
     PlcValue encodeInteger(PlcField field, Object[] values);
+
+    PlcValue encodeUInteger(PlcField field, Object[] values);
 
     PlcValue encodeBigInteger(PlcField field, Object[] values);
 

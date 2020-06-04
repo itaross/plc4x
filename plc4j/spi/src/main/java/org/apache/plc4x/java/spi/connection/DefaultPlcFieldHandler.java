@@ -45,7 +45,17 @@ public abstract class DefaultPlcFieldHandler implements PlcFieldHandler {
     }
 
     @Override
+    public PlcValue encodeUShort(PlcField field, Object[] values) {
+        throw new PlcRuntimeException("Invalid encoder for type " + field);
+    }
+
+    @Override
     public PlcValue encodeInteger(PlcField field, Object[] values) {
+        throw new PlcRuntimeException("Invalid encoder for type " + field);
+    }
+
+    @Override
+    public PlcValue encodeUInteger(PlcField field, Object[] values) {
         throw new PlcRuntimeException("Invalid encoder for type " + field);
     }
 
